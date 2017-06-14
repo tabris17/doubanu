@@ -7,3 +7,7 @@
 
 ## 使用方法
 python doubanu.py -u 你的用户名 -p 你的密码 保存进度的数据库文件路径
+
+Sample：
+
+python doubanu.py -u yourname@douban.com -p 123456 douban.db
