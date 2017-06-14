@@ -29,6 +29,7 @@ REL_BLOCKED = 3     # 被我拉黑
 REL_FOLLOWING = 4   # 被我关注
 REL_UNRELATED = 5   # 无关联
 REL_DISABLE = 6     # 已注销
+REL_ABNORMAL = 7    # 帐号异常
 
 
 def main(args):
@@ -213,21 +214,24 @@ def main(args):
             SIGN_BLOCK_ME = u'已经将你列入了黑名单'
 
             user_url = URL_USER.format(user_id=user_id)
-            content = get_url(user_url)
+            try:
+                content = get_url(user_url)
 
-            if SIGN_UNRELATED in content:
-                relation = REL_UNRELATED
-            elif SIGN_BLOCK_ME in content:
-                logging.info('%s(%s) block me', user_id, user_url)
-                relation = REL_BLOCK_ME
-            elif SIGN_FOLLOWING in content:
-                relation = REL_FOLLOWING
-            elif SIGN_BLOCKED in content:
-                relation = REL_BLOCKED
-            elif user_url not in content:
-                relation = REL_DISABLE
+                if SIGN_UNRELATED in content:
+                    relation = REL_UNRELATED
+                elif SIGN_BLOCK_ME in content:
+                    logging.info('%s(%s) block me', user_id, user_url)
+                    relation = REL_BLOCK_ME
+                elif SIGN_FOLLOWING in content:
+                    relation = REL_FOLLOWING
+                elif SIGN_BLOCKED in content:
+                    relation = REL_BLOCKED
+                elif user_url not in content:
+                    relation = REL_DISABLE
+            except requests.exceptions.HTTPError:
+                relation = REL_ABNORMAL
 
-        if relation != REL_DISABLE:
+        if relation not in (REL_DISABLE, REL_ABNORMAL):
             content = get_url(URL_USER_CONTACTS.format(user_id=user_id))
             rows = [(result.group(1), result.group(2)) for result in get_user_info.PATTERN_USER.finditer(content)]
             db_conn.executemany('INSERT OR IGNORE INTO `schedule` (`user_id`, `nickname`) VALUES (?, ?);', rows)
