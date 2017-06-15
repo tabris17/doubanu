@@ -6,11 +6,18 @@
 - requests
 
 ## 使用方法
-python doubanu.py -u 你的用户名 -p 你的密码 保存进度的数据库文件路径
+
+`python doubanu.py -u <用户名> -p <密码> -o <结果文件路径> <进度文件路径>`
+
+或者在命令行下运行：
+
+`doubanu.exe -u <用户名> -p <密码> -o <结果文件路径> <进度文件路径>`
 
 Sample：
 
-python doubanu.py -u yourname@douban.com -p 123456 douban.db
+`python doubanu.py -u yourname@douban.com -p 123456 -o who_block_me.log douban.db`
+
+`doubanu.exe -u yourname@douban.com -p 123456 -o who_block_me.log douban.db`
 
 ## 获取结果
 
@@ -21,3 +28,5 @@ python doubanu.py -u yourname@douban.com -p 123456 douban.db
 查询语句：
 
 `select * from schedule where relation=2;`
+
+新增`-o/--output`参数。可以将结果保存到日志文件中。
