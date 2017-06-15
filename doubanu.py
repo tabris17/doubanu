@@ -41,14 +41,30 @@ def main(args):
     arg_group = arg_parser.add_argument_group('authentication')
     arg_group.add_argument('-u', '--username', help='set username to your douban account')
     arg_group.add_argument('-p', '--password', help='set password to your douban account')
+    arg_parser.add_argument('-o', '--output', help='save result to file')
     arg_parser.add_argument('-d', '--debug', action='store_true', default=False, help='print debug information')
     parsed_args = arg_parser.parse_args(args[1:])
 
     schedule = parsed_args.schedule
     username = parsed_args.username
     password = parsed_args.password
+    output_file = parsed_args.output
 
     logging.basicConfig(level=logging.DEBUG if parsed_args.debug else logging.INFO)
+
+    if output_file is None:
+        def log(ln):
+            """
+            Disable log message to file
+            """
+            pass
+    else:
+        def log(ln):
+            """
+            Log message to file
+            """
+            with open(output_file, 'a+') as file:
+                file.write(ln + os.linesep)
 
     def open_db():
         """
@@ -216,11 +232,11 @@ def main(args):
             user_url = URL_USER.format(user_id=user_id)
             try:
                 content = get_url(user_url)
-
                 if SIGN_UNRELATED in content:
                     relation = REL_UNRELATED
                 elif SIGN_BLOCK_ME in content:
                     logging.info('%s(%s) block me', user_id, user_url)
+                    log('{user_id} ({user_url})'.format(user_id=user_id, user_url=user_url))
                     relation = REL_BLOCK_ME
                 elif SIGN_FOLLOWING in content:
                     relation = REL_FOLLOWING
@@ -257,4 +273,7 @@ def main(args):
     logging.info('all done.')
 
 if __name__ == '__main__':
-    main(sys.argv)
+    try:
+        main(sys.argv)
+    except KeyboardInterrupt:
+        print('exiting...')
