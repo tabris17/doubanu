@@ -2,7 +2,7 @@
 豆瓣爬虫，找出拉黑你的人
 
 ## 环境需求
-- >python3（只在python3.4下跑过，其他版本未测试）
+- python3（只在python3.4下跑过，其他版本未测试）
 - requests
 
 **Windows下可以使用编译好的exe文件直接运行**
